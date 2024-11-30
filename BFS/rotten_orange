@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        int ans = 0;
+        //{{r,c},m}
+        queue<pair<pair<int,int>,int>> bfs;
+        int vis[n][m];
+
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+                if(grid[i][j]==2){
+                    bfs.push({{i,j},0});
+                    vis[i][j] = 2;
+                }
+                else{
+                    vis[i][j] = 0;
+                }
+            }
+        }
+        int nrow[] = {-1,0,1,0};
+        int ncol[] = {0,1,0,-1};
+
+        while(!bfs.empty()){
+            int prow = bfs.front().first.first;
+            int pcol = bfs.front().first.second;
+            int ptime = bfs.front().second;
+            ans = max(ans,ptime);
+            bfs.pop();
+
+            for(int i=0; i<4; i++){
+                int crow = prow+nrow[i];
+                int ccol = pcol+ncol[i];
+
+                if(crow<n && crow>=0 && ccol<m && ccol>=0 && grid[crow][ccol]==1 && vis[crow][ccol]!=2){
+                    bfs.push({{crow,ccol},ptime+1});
+                    vis[crow][ccol] = 2;
+                }
+            }
+        }
+
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+                if(grid[i][j]==1 && vis[i][j]!=2){
+                    ans = -1;
+                    return ans;
+                }
+            }
+        }
+        return ans;
+    }
+};
