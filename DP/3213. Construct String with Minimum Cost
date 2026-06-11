@@ -1,0 +1,101 @@
+class TrieNode {
+public:
+    TrieNode* links[26] = {nullptr};
+    int cost = INT_MAX;
+};
+
+class Trie {
+public:
+    TrieNode* root;
+
+    Trie() {
+        root = new TrieNode();
+    }
+
+    void insert(string& s, int co) {
+        TrieNode* node = root;
+
+        for (char c : s) {
+            if (!node->links[c - 'a'])
+                node->links[c - 'a'] = new TrieNode();
+
+            node = node->links[c - 'a'];
+        }
+
+        node->cost = min(node->cost, co);
+    }
+};
+
+class Solution {
+public:
+    int func(int pos,string &target,vector<int> &dp,Trie &trie){
+
+        if(pos == target.size()) return 0;
+        if(dp[pos] != -1) return dp[pos];
+
+        int ans = INT_MAX;
+
+        //string s = "";
+        TrieNode* node = trie.root;
+
+        for(int i=pos; i<target.size(); i++){
+            char c = target[i];
+            if(!node->links[c-'a']) break;
+            node = node->links[c-'a'];
+
+            //s += c;
+            if(node->cost != INT_MAX){
+                int cur = func(i+1,target,dp,trie);
+                if(cur != INT_MAX) ans = min(ans,node->cost+cur);
+            }
+        }
+
+        return dp[pos] = ans;
+    }
+
+    int minimumCost(string target, vector<string>& words, vector<int>& costs) {
+        //unordered_map<string,int> wordMap;
+        int n = words.size();
+
+        Trie trie;
+
+        for(int i=0; i<n; i++){
+            string word = words[i];
+            int cost = costs[i];
+
+            trie.insert(word,cost);
+
+            // if(wordMap.find(word) == wordMap.end()) wordMap[word] = cost;
+            // else wordMap[word] = min(wordMap[word],cost);
+        }
+
+        vector<long long> dp(target.size()+1,INT_MAX);
+        dp[target.size()] = 0;
+
+        //int ans =  func(0,target,dp,trie);
+
+        for(int pos = target.size()-1; pos>=0; pos--){
+            TrieNode* node = trie.root;
+            int ans = INT_MAX;
+
+            for(int i=pos; i<target.size(); i++){
+                char c = target[i];
+                if(!node->links[c-'a']) break;
+                node = node->links[c-'a'];
+
+                //s += c;
+                if(node->cost != INT_MAX){
+                    int cur = dp[i+1];
+                    if(cur != INT_MAX) ans = min(ans,node->cost+cur);
+                }
+            }
+
+            dp[pos] = ans;
+        }
+
+        int ans = dp[0];
+        if(ans == INT_MAX) return -1;
+
+        return ans;
+    }
+};
