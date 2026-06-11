@@ -1,1 +1,90 @@
 
+class Solution {
+public:
+    const int MOD = 1e9+7;
+    const int LOG = 20;
+    int n;
+    vector<vector<int>> adj;
+    vector<long long> power;
+    vector<vector<int>> up;
+    vector<int> depth;
+
+    void computePower(){
+        for(int i=1; i<power.size(); i++){
+            power[i] = (power[i-1]*2)%MOD;
+        }
+    }
+
+    void dfs(int node,int parent){
+        up[node][0] = parent;
+
+        for(int j=1; j<LOG; j++){
+            up[node][j] = up[up[node][j-1]][j-1];
+        }
+
+        for(int v:adj[node]){
+            if(v == parent) continue;
+            depth[v] = depth[node]+1;
+            dfs(v,node);
+        }
+    }
+
+    int findLCA(int u,int v){
+        if(depth[u]<depth[v]) swap(u,v);
+        int diff = depth[u] - depth[v];
+
+        for(int curBit = LOG-1; curBit>=0; curBit--){
+            if(diff&(1<<curBit)){
+                u = up[u][curBit];
+            }
+        }
+
+        if(u == v) return u;
+
+        for(int j=LOG-1; j>=0; j--){
+            if(up[u][j] != up[v][j]){
+                u = up[u][j];
+                v = up[v][j];
+            }
+        }
+
+        return up[u][0];
+    }
+
+
+    vector<int> assignEdgeWeights(vector<vector<int>>& edges, vector<vector<int>>& queries) {
+        n = edges.size()+1;
+        adj = vector<vector<int>>(n+1);
+        power = vector<long long>(n+1,1);
+        up = vector<vector<int>>(n+1,vector<int>(LOG));
+        depth = vector<int>(n+1,0);
+        
+        for(auto &it:edges){
+            int u = it[0];
+            int v = it[1];
+
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        computePower();
+        dfs(1,1);
+
+        vector<int> ans;
+
+        for(auto &it:queries){
+            int u = it[0];
+            int v = it[1];
+
+            if(u == v){
+                ans.push_back(0);
+                continue;
+            }
+            
+            int dep = depth[u]+depth[v] - (2*depth[findLCA(u,v)]);
+            ans.push_back(power[dep-1]);
+        }
+
+        return ans;
+    }
+};
