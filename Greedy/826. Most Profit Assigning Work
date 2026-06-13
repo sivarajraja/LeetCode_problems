@@ -1,0 +1,56 @@
+class Pr{
+    int dif;
+    int prof;
+
+    Pr(int d,int p){
+        dif = d;
+        prof = p;
+    }
+}
+
+class Solution {
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        int n = profit.length;
+        int m = worker.length;
+
+        ArrayList<Pr> jobs = new ArrayList<>();
+
+        for(int i=0; i<n; i++){
+            int dif = difficulty[i];
+            int pro = profit[i];
+
+            jobs.add(new Pr(dif,pro));
+        }
+
+        Arrays.sort(worker);
+
+        for (int i = 0, j = worker.length - 1; i < j; i++, j--) {
+            int temp = worker[i];
+            worker[i] = worker[j];
+            worker[j] = temp;
+        }
+
+        jobs.sort((a,b)->Integer.compare(b.prof,a.prof));
+
+        int maxProfit = 0;
+        
+        int jobPos = 0,workerPos = 0;
+
+        while(jobPos<n && workerPos<m){
+            int jobDif = jobs.get(jobPos).dif;
+            int jobProf = jobs.get(jobPos).prof;
+            int workerDif = worker[workerPos];
+
+            //job completed
+            if(jobDif<=workerDif){
+                maxProfit += jobProf;
+                workerPos++;
+            }
+            else{
+                jobPos++;
+            }
+        }
+
+        return maxProfit;
+    }
+}
