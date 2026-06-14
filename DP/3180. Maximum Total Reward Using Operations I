@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int func(int pos,int x,int n,vector<int>& rewardValues,vector<vector<int>> &dp){
+        if(pos >= n) return 0;
+        if(dp[pos][x] != -1) return dp[pos][x];
+
+        int take = -1;
+        // take
+        if(x<rewardValues[pos]){
+            int nextPos = upper_bound(rewardValues.begin(),rewardValues.end(),x+rewardValues[pos])- rewardValues.begin();
+            take = rewardValues[pos] + func(nextPos,x+rewardValues[pos],n,rewardValues,dp);
+        }
+
+        //skip
+        int skip = 0+func(pos+1,x,n,rewardValues,dp);
+
+        return dp[pos][x] = max(take,skip);
+    }
+
+    int maxTotalReward(vector<int>& rewardValues) {
+        int n = rewardValues.size();
+        sort(rewardValues.begin(),rewardValues.end());
+        vector<vector<int>> dp(n,vector<int>(4000,-1));
+        return func(0,0,n,rewardValues,dp);
+    }
+};
