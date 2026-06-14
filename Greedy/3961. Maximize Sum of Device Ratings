@@ -1,0 +1,51 @@
+class Solution {
+public:
+    long long maxRatings(vector<vector<int>>& units) {
+        int n = units.size();
+
+        if (n == 1)
+            return *min_element(units[0].begin(), units[0].end());
+
+        long long totalSum = 0;
+        bool allSingleElement = true;
+
+        // Check if every unit contains exactly one element
+        for (auto &unit : units) {
+            if (unit.size() == 1)
+                totalSum += unit[0];
+            else {
+                allSingleElement = false;
+                break;
+            }
+        }
+
+        if (allSingleElement)
+            return totalSum;
+
+        totalSum = 0;
+
+        int globalMin = INT_MAX;
+        int globalSecondMin = INT_MAX;
+
+        for (auto &unit : units) {
+            int firstMin = INT_MAX;
+            int secondMin = INT_MAX;
+
+            // Find smallest and second smallest element in current unit
+            for (int value : unit) {
+                if (value < firstMin) {
+                    secondMin = firstMin;
+                    firstMin = value;
+                } else if (value < secondMin) {
+                    secondMin = value;
+                }
+            }
+
+            totalSum += secondMin;
+            globalMin = min(globalMin, firstMin);
+            globalSecondMin = min(globalSecondMin, secondMin);
+        }
+
+        return totalSum - globalSecondMin + globalMin;
+    }
+};
