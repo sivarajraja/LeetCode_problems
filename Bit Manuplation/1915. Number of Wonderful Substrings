@@ -1,0 +1,40 @@
+class Solution {
+public:
+    long long wonderfulSubstrings(string word) {
+        int n = word.size();
+        vector<int> freq(10,0);
+        unordered_map<int,int> PrefixBitMap;
+        PrefixBitMap[0] = 1;
+
+        long long substringCount = 0;
+
+        for(int i=0; i<n; i++){
+            char c = word[i];
+            freq[c-'a']++;
+
+            int curBitVal = 0;
+
+            for(int i=0; i<10; i++){
+                int curBit = 0;
+                if(freq[i]%2 == 1) curBit = 1;
+
+                if(curBit) curBitVal |= (curBit<<i);
+            }
+
+            //1 different (1 odd)
+            for(int i=0; i<10; i++){
+                int val = curBitVal;
+                val ^= (1<<i);
+
+                substringCount += PrefixBitMap[val];
+            }
+
+            //same (All even)
+            substringCount += PrefixBitMap[curBitVal];
+
+            PrefixBitMap[curBitVal]++;
+        }
+
+        return substringCount;
+    }
+};
