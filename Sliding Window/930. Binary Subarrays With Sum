@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int func(vector<int>& nums,int n,int k){
+        //if(k<0) return 0;
+
+        int low = 0;
+        int ans = 0;
+
+        int sum = 0;
+
+        for(int high = 0; high<n; high++){
+            sum += nums[high];
+
+            while(low<=high && sum>k){
+                sum -= nums[low];
+                low++;
+            }
+
+            ans += high-low+1;
+        }
+
+        return ans;
+    }
+
+    int numSubarraysWithSum(vector<int>& nums, int goal) {
+        int n = nums.size();
+        return func(nums,n,goal) - func(nums,n,goal-1);
+    }
+};
