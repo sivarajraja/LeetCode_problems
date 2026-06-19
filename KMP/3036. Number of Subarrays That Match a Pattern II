@@ -1,0 +1,52 @@
+class Solution {
+public:
+    void kmp(vector<int> &numsPattern,vector<int> &lps){
+        int n = lps.size();
+
+        for(int i=1; i<n; i++){
+            int lastPos = lps[i-1];
+            //cout<<i<<" "<<lps[i]<<endl;
+
+            while(lastPos > 0 && numsPattern[lastPos] != numsPattern[i]){
+                //cout<<i<<" "<<lastPos<<endl;
+                lastPos = lps[lastPos-1];
+            }
+
+            if(numsPattern[lastPos] == numsPattern[i]){
+                lps[i] = lastPos+1;
+                //cout<<i<<" "<<lps[i]<<endl;
+            }
+
+            //cout<<i<<" "<<lps[i]<<endl;
+        }
+    }
+
+    int countMatchingSubarrays(vector<int>& nums, vector<int>& pattern) {
+        int n = nums.size();
+        int m = pattern.size();
+
+        vector<int> numsPattern(n+m,0);
+        vector<int> lps(n+m,0);
+        for(int i=0; i<m; i++) numsPattern[i] = pattern[i];
+        numsPattern[m] = 9;
+
+        for(int i=0; i<n-1; i++){
+            if(nums[i]<nums[i+1]){
+                numsPattern[i+m+1] = 1;
+            }
+            else if(nums[i]>nums[i+1]){
+                numsPattern[i+m+1] = -1;
+            }
+        }
+
+        kmp(numsPattern,lps);
+
+        int ans = 0;
+
+        for(int i=m+1; i<n+m; i++){
+            if(lps[i]>=m) ans++;
+        }
+
+        return ans;
+    }
+};
