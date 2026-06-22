@@ -1,0 +1,55 @@
+class Solution {
+public:
+    long long dp[17][11][2][2];
+
+    long long dfs(int pos, int prev, bool tight, bool started,
+                  string &num, int k) {
+
+        if (pos == num.size())
+            return 1;
+
+        if (dp[pos][prev][tight][started] != -1)
+            return dp[pos][prev][tight][started];
+
+        int limit = tight ? num[pos] - '0' : 9;
+
+        long long ans = 0;
+
+        for (int d = 0; d <= limit; d++) {
+
+            bool newTight = tight && (d == limit);
+
+            if (!started) {
+
+                if (d == 0) {
+                    ans += dfs(pos + 1, 10, newTight, false, num, k);
+                } else {
+                    ans += dfs(pos + 1, d, newTight, true, num, k);
+                }
+
+            } else {
+
+                if (abs(prev - d) <= k) {
+                    ans += dfs(pos + 1, d, newTight, true, num, k);
+                }
+
+            }
+        }
+
+        return dp[pos][prev][tight][started] = ans;
+    }
+
+    long long solve(long long x, int k) {
+        if (x < 0) return 0;
+
+        string num = to_string(x);
+
+        memset(dp, -1, sizeof(dp));
+
+        return dfs(0, 10, true, false, num, k);
+    }
+
+    long long goodIntegers(long long l, long long r, int k) {
+        return solve(r, k) - solve(l - 1, k);
+    }
+};
