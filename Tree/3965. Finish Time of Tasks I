@@ -1,0 +1,58 @@
+class Solution {
+public:
+    // vector<long long> func(int node,vector<vector<int>> &adj,vector<int>& baseTime){
+
+    //     if(adj[node].size() == 0) return {baseTime[node],baseTime[node],baseTime[node]};
+
+    //     long long Earliest = INT_MAX;
+    //     long long Latest = INT_MIN;
+
+    //     for(int v:adj[node]){
+    //         vector<long long> temp = func(v,adj,baseTime);
+    //         Earliest = min(Earliest,temp[0]);
+    //         Latest = max(Latest,temp[1]);
+    //     }
+
+    //     long long ownDuration = (Latest - Earliest) + baseTime[node];
+    //     long long finishingTime = Latest + ownDuration;
+
+    //     Earliest = min(Earliest,finishingTime);
+    //     Latest = max(Latest,finishingTime);
+
+    //     return {Earliest,Latest,finishingTime};
+    // }
+
+    long long dfs(int u,
+              vector<vector<int>>& adj,
+              vector<int>& baseTime)
+    {
+        if(adj[u].empty())
+            return baseTime[u];
+
+        long long mn = LLONG_MAX;
+        long long mx = LLONG_MIN;
+
+        for(int v : adj[u]){
+            long long t = dfs(v, adj, baseTime);
+            mn = min(mn, t);
+            mx = max(mx, t);
+        }
+
+        return mx + (mx - mn) + baseTime[u];
+    }
+
+    long long finishTime(int n, vector<vector<int>>& edges, vector<int>& baseTime) {
+        vector<vector<int>> adj(n);
+
+        for(auto &it:edges){
+            int u = it[0];
+            int v = it[1];
+
+            adj[u].push_back(v);
+        }
+
+        long long ans = dfs(0,adj,baseTime);
+
+        return ans;
+    }
+};
