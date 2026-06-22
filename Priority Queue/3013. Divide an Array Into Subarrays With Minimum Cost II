@@ -1,0 +1,66 @@
+class Solution {
+public:
+    long long minimumCost(vector<int>& nums, int k, int dist) {
+        int n = nums.size();
+        long long ans = LLONG_MAX;
+
+        multiset<int> minSet, maxSet;
+        int low = 1;
+        k--;
+
+        for (int i = 1; i <= dist; i++)
+            maxSet.insert(nums[i]);
+
+        long long minSum = 0;
+
+        for (int high = dist + 1; high < n; high++) {
+            maxSet.insert(nums[high]);
+
+            while (minSet.size() < k) {
+                auto it = maxSet.begin();
+                minSet.insert(*it);
+                minSum += *it;
+                maxSet.erase(it);
+            }
+
+            while (!maxSet.empty() && !minSet.empty() &&
+                   *maxSet.begin() < *minSet.rbegin()) {
+
+                auto it1 = maxSet.begin();
+                int x = *it1;
+                maxSet.erase(it1);
+
+                minSet.insert(x);
+                minSum += x;
+
+                auto it2 = --(minSet.end());
+                minSum -= *it2;
+                maxSet.insert(*it2);
+                minSet.erase(it2);
+            }
+
+            ans = min(ans, minSum + nums[0]);
+
+            int leftVal = nums[low++];
+            auto it = minSet.find(leftVal);
+
+            if (it != minSet.end()) {
+                minSum -= *it;
+                minSet.erase(it);
+
+                if (!maxSet.empty()) {
+                    auto it2 = maxSet.begin();
+                    minSet.insert(*it2);
+                    minSum += *it2;
+                    maxSet.erase(it2);
+                }
+            } else {
+                it = maxSet.find(leftVal);
+                if (it != maxSet.end())
+                    maxSet.erase(it);
+            }
+        }
+
+        return ans;
+    }
+};
