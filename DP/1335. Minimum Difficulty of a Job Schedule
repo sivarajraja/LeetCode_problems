@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int func(int pos,int d,int n,vector<int>& jobDifficulty,vector<vector<int>> &dp){
+
+        if(pos == n){
+            if(d == 0) return 0;
+            return 300003;
+        }
+
+        if(d == 0) return 300003;
+
+        if(dp[pos][d] != -1) return dp[pos][d];
+
+        int ans = INT_MAX;
+
+        int maxi = 0;
+        for(int end = pos; end<n; end++){
+            maxi = max(maxi,jobDifficulty[end]);
+            ans = min(ans,maxi+func(end+1,d-1,n,jobDifficulty,dp));
+        }
+
+        return dp[pos][d] = ans;
+    }
+
+    int minDifficulty(vector<int>& jobDifficulty, int D) {
+        int n = jobDifficulty.size();
+        if(n<D) return -1;
+
+        vector<vector<int>> dp(n+1,vector<int>(D+1,300003));
+
+        dp[n][0] = 0;
+
+        for(int pos = n-1; pos>=0; pos--){
+            for(int d = 1; d<=D; d++){
+
+                int ans = INT_MAX;
+
+                int maxi = 0;
+                for(int end = pos; end<n; end++){
+                    maxi = max(maxi,jobDifficulty[end]);
+                    ans = min(ans,maxi+dp[end+1][d-1]);
+                }
+
+                dp[pos][d] = ans;
+            }
+        }
+
+        //sort(jobDifficulty.begin(),jobDifficulty.end());
+        //int ans = func(0,d,n,jobDifficulty,dp);
+        int ans = dp[0][D];
+        return ans;
+    }
+};
