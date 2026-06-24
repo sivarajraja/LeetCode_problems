@@ -1,7 +1,7 @@
 class Solution {
 public:
     int func(int pos,int n,vector<pair<int,pair<int,int>>> &time,vector<int> &dp){
-        
+
         if(pos >= n) return 0;
         if(dp[pos] != -1) return dp[pos];
 
@@ -30,8 +30,23 @@ public:
         }
 
         sort(time.begin(),time.end());
-        vector<int> dp(n,-1);
+        vector<int> dp(n+1,0);
 
-        return func(0,n,time,dp);
+        for(int pos = n-1; pos>=0; pos--){
+
+            int take = 0,skip = 0;
+
+            //take
+            int nextPos = lower_bound(time.begin(), time.end(), make_pair(time[pos].second.first, make_pair(0, 0)))-time.begin();
+            take = time[pos].second.second + dp[nextPos];
+
+            //skip
+            skip = 0+dp[pos+1];
+
+            dp[pos] = max(take,skip);
+        }
+
+        //return func(0,n,time,dp);
+        return dp[0];
     }
 };
