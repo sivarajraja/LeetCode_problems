@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int func(int pos,int n,vector<pair<int,pair<int,int>>> &time,vector<int> &dp){
+        
+        if(pos >= n) return 0;
+        if(dp[pos] != -1) return dp[pos];
+
+        int take = 0,skip = 0;
+
+        //take
+        int nextPos = lower_bound(time.begin(), time.end(), make_pair(time[pos].second.first, make_pair(0, 0)))-time.begin();
+        take = time[pos].second.second + func(nextPos,n,time,dp);
+
+        //skip
+        skip = 0+func(pos+1,n,time,dp);
+
+        return dp[pos] = max(take,skip);
+    }
+
+    int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+        int n = startTime.size();
+        vector<pair<int,pair<int,int>>> time;
+
+        for(int i=0; i<n; i++){
+            int st = startTime[i];
+            int et = endTime[i];
+            int p = profit[i];
+
+            time.push_back({st,{et,p}});
+        }
+
+        sort(time.begin(),time.end());
+        vector<int> dp(n,-1);
+
+        return func(0,n,time,dp);
+    }
+};
