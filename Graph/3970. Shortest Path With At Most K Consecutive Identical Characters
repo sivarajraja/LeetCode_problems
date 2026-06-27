@@ -1,0 +1,54 @@
+class Solution {
+public:
+    int shortestPath(int n, vector<vector<int>>& edges, string labels, int k) {
+        priority_queue<pair<int,pair<int,int>>, vector<pair<int,pair<int,int>>>, greater<pair<int,pair<int,int>>>> pq;
+        vector<vector<pair<int,int>>> adj(n);
+        //vector<int> dist(n,INT_MAX),cons(n,INT_MAX);
+        vector<vector<int>> dist(n,vector<int>(k+1,INT_MAX));
+
+        for(auto &it:edges){
+            int u = it[0];
+            int v = it[1];
+            int wt = it[2];
+
+            adj[u].push_back({v,wt});
+        }
+
+        // { dist , { count , node }}
+        pq.push({0,{1,0}});
+        dist[0][1] = 0;
+        //cons[0] = 1;
+
+        while(!pq.empty()){
+            pair<int,pair<int,int>> temp = pq.top();
+            pq.pop();
+
+            int dis = temp.first;
+            int cnt = temp.second.first;
+            int node = temp.second.second;
+
+            if(node == n-1) return dis;
+            if(dist[node][cnt] < dis) continue;
+
+            for(auto &it:adj[node]){
+                int v = it.first;
+                int wt = it.second;
+                int nextCnt = (labels[v] == labels[node])? cnt+1:1;
+
+                if(nextCnt > k) continue;
+
+                if(dist[v][nextCnt] > dis+wt){
+                    dist[v][nextCnt] = dis+wt;
+                    //if(cons[v]>nextCnt) cons[v] = nextCnt;
+                    pq.push({dis+wt,{nextCnt,v}});
+                }
+                // else if(cons[v]>nextCnt){
+                //     cons[v] = nextCnt;
+                //     pq.push({dis+wt,{nextCnt,v}});
+                // }
+            }
+        }
+
+        return -1;
+    }
+};
