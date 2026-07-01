@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int findDiv(int val,int next){
+
+        int low = 1,high = val;
+        int ans = val;
+
+        while(low<=high){
+            int div = low+(high-low)/2;
+
+            int q = val/div;
+            if(val%div != 0) q++;
+
+            if(q<=next){
+                ans = div;
+                high = div-1;
+            }
+            else low = div+1;
+        }
+
+        //cout<<val<<" "<<ans<<endl;
+        return ans;
+    }
+
+    long long minimumReplacement(vector<int>& nums) {
+        int n = nums.size();
+        long long ans = 0;
+
+        int next = nums[n-1];
+
+        for(int i=n-2; i>=0; i--){
+            int cur = nums[i];
+
+            if(cur<=next){  //already decreasing
+                next = cur;
+                continue;
+            }
+            else{
+                int div = findDiv(cur,next);
+                int steps = div-1;
+                ans += steps;
+                next = cur/div;
+            }
+        }
+
+        return ans;
+    }
+};
