@@ -1,0 +1,45 @@
+class Solution {
+public:
+    bool func(int i,int prevJump,int n,vector<int>& stones,unordered_map<int,int> &numPos,vector<vector<int>> &dp){
+
+        if(prevJump<=0) return false;
+        if(i == n-1) return true;
+
+        if(dp[i][prevJump] != -1) return dp[i][prevJump];
+
+        if(numPos.find(stones[i]+prevJump-1) != numPos.end()){
+            if(func(numPos[stones[i]+prevJump-1],prevJump-1,n,stones,numPos,dp)){
+                return dp[i][prevJump] = true;
+            }
+        }
+
+        if(numPos.find(stones[i]+prevJump)!= numPos.end()){
+            if(func(numPos[stones[i]+prevJump],prevJump,n,stones,numPos,dp)){
+                return dp[i][prevJump] = true;
+            }
+        }
+
+        if(numPos.find(stones[i]+prevJump+1) != numPos.end()){
+            if(func(numPos[stones[i]+prevJump+1],prevJump+1,n,stones,numPos,dp)){
+                return dp[i][prevJump] = true;
+            }
+        }
+
+        return dp[i][prevJump] = false;
+    }
+
+    bool canCross(vector<int>& stones) {
+        int n = stones.size();
+        unordered_map<int,int> numPos;
+
+        for(int i=0; i<n; i++){
+            numPos[stones[i]] = i;
+        }
+
+        if(stones[1] != 1) return false;
+
+        vector<vector<int>> dp(n,vector<int>(n,-1));
+
+        return func(1,1,n,stones,numPos,dp);
+    }
+};
